@@ -52,6 +52,7 @@ test_IntInt :: proc(t: ^testing.T) {
 @(test)
 test_IntString :: proc(t: ^testing.T) {
     num_string := util.create_IntString()
+    defer util.destroy_IntString(&num_string)
 
     util.IntString_set(&num_string, 101, "one")
     util.IntString_set(&num_string, 102, "two")
@@ -59,5 +60,8 @@ test_IntString :: proc(t: ^testing.T) {
     testing.expect(t, util.IntString_get_string(&num_string, 101) == "one", "get 101")
     testing.expect(t, util.IntString_get_string(&num_string, 102) == "two", "get 102")
 
-    util.destroy_IntString(&num_string)
+    arr := util.IntString_id_array(&num_string)
+    defer delete(arr)
+    slice.sort(arr[:])
+    testing.expect(t, slice.equal(arr[:], []int{101, 102}), "id_array")
 }

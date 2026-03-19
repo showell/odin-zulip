@@ -21,3 +21,12 @@ IntString_set :: proc(self: ^IntString, id: int, s: string) {
 IntString_get_string :: proc(self: ^IntString, id: int) -> string {
     return self.string_map[id]
 }
+
+IntString_id_array :: proc(self: ^IntString) -> [dynamic]int {
+    arr: [dynamic]int
+
+    for num in self.string_map {
+        append(&arr, num)
+    }
+    return arr
+}
