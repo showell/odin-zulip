@@ -45,6 +45,8 @@ test_IntInt :: proc(t: ^testing.T) {
         defer delete(arr)
         testing.expect(t, slice.equal(arr[:], []int{}), "reverse 99")
     }
+
+    testing.expect_value(t, util.IntInt_size(&num_num), 4);
 }
 
 @(test)
