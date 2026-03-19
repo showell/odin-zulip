@@ -30,22 +30,29 @@ IntInt_set :: proc(self: ^IntInt, id1: int, id2: int) {
 }
 
 IntInt_get :: proc(self: ^IntInt, id1: int) -> int {
-    return self.fwd_map[id1];
+    return self.fwd_map[id1]
 }
 
-IntInt_reverse_get :: proc(self: ^IntInt, id2: int) -> IntSet {
-    return self.reverse_map[id2];
+IntInt_reverse_get :: proc(self: ^IntInt, id2: int) -> [dynamic]int {
+    set := self.reverse_map[id2];
+    arr: [dynamic]int
+
+    for num in set {
+        append(&arr, num)
+    }
+
+    return arr
 }
 
 main :: proc() {
     num_num := create_IntInt();
 
-    IntInt_set(&num_num, 5, 50);
-    IntInt_set(&num_num, 6, 150);
-    IntInt_set(&num_num, 7, 50);
+    IntInt_set(&num_num, 5, 50)
+    IntInt_set(&num_num, 6, 150)
+    IntInt_set(&num_num, 7, 50)
 
-	fmt.printf("%d\n", IntInt_get(&num_num, 5));
-	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 50));
-	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 150));
-	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 180));
+	fmt.printf("%d\n", IntInt_get(&num_num, 5))
+	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 50))
+	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 150))
+	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 180))
 }
