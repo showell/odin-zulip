@@ -21,6 +21,17 @@ test_IntInt :: proc() {
 	fmt.printf("%v\n", util.IntInt_reverse_get(&num_num, 180))
 }
 
+test_IntString :: proc() {
+    num_string := util.create_IntString();
+
+    util.IntString_set(&num_string, 101, "one");
+    util.IntString_set(&num_string, 102, "two");
+
+	fmt.printf("%v\n", util.IntString_get_string(&num_string, 101))
+	fmt.printf("%v\n", util.IntString_get_string(&num_string, 102))
+}
+
 main :: proc() {
     test_IntInt()
+    test_IntString()
 }
