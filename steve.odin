@@ -3,35 +3,39 @@ package main
 import "core:fmt"
 
 import "util"
+import "core:testing"
 
-test_IntInt :: proc() {
+@(test)
+test_IntInt :: proc(t: ^testing.T) {
     num_num := util.create_IntInt();
+    defer util.destroy_IntInt(&num_num);
 
     util.IntInt_set(&num_num, 5, 50)
     util.IntInt_set(&num_num, 6, 150)
     util.IntInt_set(&num_num, 7, 50)
     util.IntInt_set(&num_num, 8, 50)
 
-	fmt.printf("%d\n", util.IntInt_get(&num_num, 5))
-	fmt.printf("%d\n", util.IntInt_get(&num_num, 6))
-	fmt.printf("%d\n", util.IntInt_get(&num_num, 7))
-	fmt.printf("%d\n", util.IntInt_get(&num_num, 8))
+    testing.expect(t, util.IntInt_get(&num_num, 5) == 50, "get 5")
+    testing.expect(t, util.IntInt_get(&num_num, 6) == 150, "get 6")
+    testing.expect(t, util.IntInt_get(&num_num, 7) == 50, "get 7")
+    testing.expect(t, util.IntInt_get(&num_num, 8) == 50, "get 8")
+
+    /*
 	fmt.printf("%v\n", util.IntInt_reverse_get(&num_num, 50))
 	fmt.printf("%v\n", util.IntInt_reverse_get(&num_num, 150))
 	fmt.printf("%v\n", util.IntInt_reverse_get(&num_num, 180))
+    */
 }
 
-test_IntString :: proc() {
+@(test)
+test_IntString :: proc(t: ^testing.T) {
     num_string := util.create_IntString();
 
     util.IntString_set(&num_string, 101, "one");
     util.IntString_set(&num_string, 102, "two");
 
-	fmt.printf("%v\n", util.IntString_get_string(&num_string, 101))
-	fmt.printf("%v\n", util.IntString_get_string(&num_string, 102))
-}
+    testing.expect(t, util.IntString_get_string(&num_string, 101) == "one", "get 101")
+    testing.expect(t, util.IntString_get_string(&num_string, 102) == "two", "get 102")
 
-main :: proc() {
-    test_IntInt()
-    test_IntString()
+    util.destroy_IntString(&num_string);
 }

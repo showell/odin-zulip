@@ -10,6 +10,10 @@ create_IntString :: proc() -> IntString {
     }
 }
 
+destroy_IntString :: proc(self: ^IntString) {
+    delete(self.string_map);
+}
+
 IntString_set :: proc(self: ^IntString, id: int, s: string) {
     self.string_map[id] = s;
 }

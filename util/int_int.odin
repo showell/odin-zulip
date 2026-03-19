@@ -14,6 +14,16 @@ create_IntInt :: proc() -> IntInt {
     }
 }
 
+destroy_IntInt :: proc(self: ^IntInt) {
+    delete(self.fwd_map);
+
+    for _, &int_set in self.reverse_map {
+        delete(int_set);
+    }
+
+    delete(self.reverse_map);
+}
+
 IntInt_set :: proc(self: ^IntInt, id1: int, id2: int) {
     self.fwd_map[id1] = id2
 
