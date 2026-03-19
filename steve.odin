@@ -52,6 +52,8 @@ main :: proc() {
     IntInt_set(&num_num, 7, 50)
 
 	fmt.printf("%d\n", IntInt_get(&num_num, 5))
+	fmt.printf("%d\n", IntInt_get(&num_num, 6))
+	fmt.printf("%d\n", IntInt_get(&num_num, 7))
 	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 50))
 	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 150))
 	fmt.printf("%v\n", IntInt_reverse_get(&num_num, 180))
