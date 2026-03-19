@@ -22,20 +22,29 @@ test_IntInt :: proc(t: ^testing.T) {
     testing.expect(t, util.IntInt_get(&num_num, 7) == 50, "get 7")
     testing.expect(t, util.IntInt_get(&num_num, 8) == 50, "get 8")
 
-    sorted :: proc(num_num: ^util.IntInt, id: int) -> [dynamic]int {
-        arr := util.IntInt_reverse_get(num_num, 50)
+    reverse_sort :: proc(num_num: ^util.IntInt, id: int) -> [dynamic]int {
+        arr := util.IntInt_reverse_get(num_num, id)
         slice.sort(arr[:])
         return arr
     }
 
-    arr := sorted(&num_num, 50)
-    defer delete(arr)
-    testing.expect(t, slice.equal(arr[:], []int{5, 7, 8}), "reverse 50")
+    {
+        arr := reverse_sort(&num_num, 50)
+        defer delete(arr)
+        testing.expect(t, slice.equal(arr[:], []int{5, 7, 8}), "reverse 50")
+    }
 
-    /*
-	fmt.printf("%v\n", util.IntInt_reverse_get(&num_num, 150))
-	fmt.printf("%v\n", util.IntInt_reverse_get(&num_num, 180))
-    */
+    {
+        arr := reverse_sort(&num_num, 150)
+        defer delete(arr)
+        testing.expect(t, slice.equal(arr[:], []int{6}), "reverse 50")
+    }
+
+    {
+        arr := reverse_sort(&num_num, 99)
+        defer delete(arr)
+        testing.expect(t, slice.equal(arr[:], []int{}), "reverse 99")
+    }
 }
 
 @(test)
