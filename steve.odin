@@ -106,4 +106,6 @@ test_IntIntInt :: proc(t: ^testing.T) {
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 101), 1)
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 102, 101), 2)
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 104), 4)
+
+    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 4), 104)
 }

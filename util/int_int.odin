@@ -39,3 +39,7 @@ IntIntInt_get_id :: proc(self: ^IntIntInt, id1: int, id2: int) -> int {
 
     return id
 }
+
+IntIntInt_get_id2 :: proc(self: ^IntIntInt, id: int) -> int {
+    return self.reverse_map[id].id2
+}
