@@ -31,12 +31,7 @@ IntInt_size :: proc(self: ^IntInt) -> int {
 IntInt_set :: proc(self: ^IntInt, id1: int, id2: int) {
     self.fwd_map[id1] = id2
 
-    reverse_set: IntSet
-    if id2 in self.reverse_map {
-        reverse_set = self.reverse_map[id2]
-    } else {
-        reverse_set = make(IntSet)
-    }
+    reverse_set: IntSet = self.reverse_map[id2] or_else make(IntSet)
     reverse_set[id1] = struct{}{}
     self.reverse_map[id2] = reverse_set
 }

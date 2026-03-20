@@ -118,4 +118,15 @@ test_IntIntInt :: proc(t: ^testing.T) {
         slice.sort(arr[:])
         testing.expect(t, slice.equal(arr[:], []int{1, 4}), "ids from id1")
     }
+    {
+        arr := util.IntIntInt_get_ids_from_id1(&int_int_int, 102)
+        defer delete(arr)
+        slice.sort(arr[:])
+        testing.expect(t, slice.equal(arr[:], []int{2}), "ids from id1")
+    }
+
+    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 101), 2)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 102), 1)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 103), 1)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 99), 0)
 }

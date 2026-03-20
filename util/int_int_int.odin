@@ -13,6 +13,7 @@ IntIntInt :: struct {
     fwd_map: map[IntPair]int,
     reverse_map: map[int]IntPair,
     ids_from_id1: map[int]IntSet,
+    id2_from_id1: map[int]IntSet,
     seq: int,
 }
 
@@ -21,6 +22,7 @@ create_IntIntInt :: proc() -> IntIntInt {
         fwd_map=make(map[IntPair]int),
         reverse_map=make(map[int]IntPair),
         ids_from_id1=make(map[int]IntSet),
+        id2_from_id1=make(map[int]IntSet),
         seq=0,
     }
 }
@@ -33,6 +35,11 @@ destroy_IntIntInt :: proc(self: ^IntIntInt) {
         delete(set)
     }
     delete(self.ids_from_id1)
+
+    for _, set in self.id2_from_id1 {
+        delete(set)
+    }
+    delete(self.id2_from_id1)
 }
 
 IntIntInt_get_id :: proc(self: ^IntIntInt, id1: int, id2: int) -> int {
@@ -48,17 +55,22 @@ IntIntInt_get_id :: proc(self: ^IntIntInt, id1: int, id2: int) -> int {
     self.reverse_map[id] = pair
 
     {
-        set: IntSet
-        if id1 in self.ids_from_id1 {
-            set = self.ids_from_id1[id1]
-        } else {
-            set = make(IntSet)
-        }
+        set: IntSet = self.ids_from_id1[id1] or_else make(IntSet)
         set[id] = struct{}{}
         self.ids_from_id1[id1] = set
     }
 
+    {
+        set: IntSet = self.id2_from_id1[id1] or_else make(IntSet)
+        set[id2] = struct{}{}
+        self.id2_from_id1[id1] = set
+    }
+
     return id
+}
+
+IntIntInt_get_id2_count :: proc(self: ^IntIntInt, id1: int) -> int {
+    return len(self.id2_from_id1[id1])
 }
 
 IntIntInt_get_id2 :: proc(self: ^IntIntInt, id: int) -> int {
