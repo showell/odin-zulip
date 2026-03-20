@@ -158,7 +158,7 @@ test_Database :: proc(t: ^testing.T) {
     database.process_server_subscription(&db, design)
 
     {
-        arr := database.channel_ids_by_name(&db)
+        arr := database.channel_ids_by_name(db)
         defer delete(arr)
         testing.expect(t, slice.equal(arr[:], []int{102, 103, 101}), "channel ids")
     }
