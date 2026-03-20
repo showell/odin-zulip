@@ -1,12 +1,14 @@
 package main
 
 import "core:fmt"
-
-import "util"
 import "core:log"
 import "core:slice"
 import "core:strings"
 import "core:testing"
+
+import "client"
+import "database"
+import "util"
 
 @(test)
 test_IntInt :: proc(t: ^testing.T) {
@@ -129,4 +131,17 @@ test_IntIntInt :: proc(t: ^testing.T) {
     testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 102), 1)
     testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 103), 1)
     testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 99), 0)
+}
+
+@(test)
+test_Database :: proc(t: ^testing.T) {
+    db := database.create()
+    defer database.destroy(&db)
+
+    subscription := client.ServerSubscription{
+        stream_id = 101,
+        name = strings.clone("feedback"),
+    }
+
+    database.process_server_subscription(&db, subscription)
 }
