@@ -69,6 +69,9 @@ test_InternString :: proc(t: ^testing.T) {
     testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
     testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
     testing.expect_value(t, util.InternString_get_string(&intern_string, 3), "three")
+
+    testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
+    testing.expect_value(t, util.InternString_get_id(&intern_string, "two"), 2)
 }
 
 @(test)
