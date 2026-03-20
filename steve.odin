@@ -167,4 +167,15 @@ test_Database :: proc(t: ^testing.T) {
     testing.expect_value(t, database.get_channel_name(db, 102), "design")
     testing.expect_value(t, database.get_channel_name(db, 103), "engineering")
     testing.expect_value(t, database.get_channel_name(db, 99), "")
+
+    message1 := client.ServerMessage{
+        content = "message1",
+        id = 201,
+        sender_full_name = strings.clone("Foo Barson"),
+        sender_id = 1001,
+        subject = "design stuff",
+        stream_id = 102,
+    }
+
+    database.process_server_message(&db, message1)
 }
