@@ -79,7 +79,7 @@ test_InternString :: proc(t: ^testing.T) {
 @(test)
 test_IntString :: proc(t: ^testing.T) {
     num_string := util.create_IntString()
-    defer util.destroy_IntString(&num_string)
+    defer util.destroy_IntString(num_string)
 
     one := strings.clone("one")
     two := strings.clone("two")

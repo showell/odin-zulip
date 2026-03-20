@@ -16,7 +16,7 @@ create :: proc() -> Database {
 }
 
 destroy :: proc(db: ^Database) {
-    util.destroy_IntString(&db.channel_name)
+    util.destroy_IntString(db.channel_name)
 }
 
 process_server_subscription :: proc(
