@@ -158,8 +158,13 @@ test_Database :: proc(t: ^testing.T) {
     database.process_server_subscription(&db, design)
 
     {
-        arr := database.channel_ids_by_name(db)
+        arr := database.get_channel_ids_by_name(db)
         defer delete(arr)
         testing.expect(t, slice.equal(arr[:], []int{102, 103, 101}), "channel ids")
     }
+
+    testing.expect_value(t, database.get_channel_name(db, 101), "feedback")
+    testing.expect_value(t, database.get_channel_name(db, 102), "design")
+    testing.expect_value(t, database.get_channel_name(db, 103), "engineering")
+    testing.expect_value(t, database.get_channel_name(db, 99), "")
 }
