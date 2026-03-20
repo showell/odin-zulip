@@ -31,11 +31,11 @@ process_server_subscription :: proc(
 }
 
 get_channel_name :: proc(db: ^Database, channel_id: int) -> string {
-    return util.IntString_get_string(&db.channel_name, channel_id)
+    return util.IntString_get_string(db.channel_name, channel_id)
 }
 
 channel_ids_by_name :: proc(db: ^Database) -> [dynamic]int {
-    arr := util.IntString_id_array(&db.channel_name)
+    arr := util.IntString_id_array(db.channel_name)
 
     cmp :: proc(id1, id2: int, user_data: rawptr) -> bool {
         db := (^Database)(user_data)

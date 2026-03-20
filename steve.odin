@@ -87,10 +87,10 @@ test_IntString :: proc(t: ^testing.T) {
     util.IntString_set(&num_string, 101, one)
     util.IntString_set(&num_string, 102, two)
 
-    testing.expect(t, util.IntString_get_string(&num_string, 101) == "one", "get 101")
-    testing.expect(t, util.IntString_get_string(&num_string, 102) == "two", "get 102")
+    testing.expect(t, util.IntString_get_string(num_string, 101) == "one", "get 101")
+    testing.expect(t, util.IntString_get_string(num_string, 102) == "two", "get 102")
 
-    arr := util.IntString_id_array(&num_string)
+    arr := util.IntString_id_array(num_string)
     defer delete(arr)
     slice.sort(arr[:])
     testing.expect(t, slice.equal(arr[:], []int{101, 102}), "id_array")
