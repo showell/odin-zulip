@@ -5,6 +5,7 @@ import "core:fmt"
 import "util"
 import "core:log"
 import "core:slice"
+import "core:strings"
 import "core:testing"
 
 @(test)
@@ -54,8 +55,11 @@ test_IntString :: proc(t: ^testing.T) {
     num_string := util.create_IntString()
     defer util.destroy_IntString(&num_string)
 
-    util.IntString_set(&num_string, 101, "one")
-    util.IntString_set(&num_string, 102, "two")
+    one := strings.clone("one")
+    two := strings.clone("two")
+
+    util.IntString_set(&num_string, 101, one)
+    util.IntString_set(&num_string, 102, two)
 
     testing.expect(t, util.IntString_get_string(&num_string, 101) == "one", "get 101")
     testing.expect(t, util.IntString_get_string(&num_string, 102) == "two", "get 102")

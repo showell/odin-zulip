@@ -11,6 +11,9 @@ create_IntString :: proc() -> IntString {
 }
 
 destroy_IntString :: proc(self: ^IntString) {
+    for id in self.string_map {
+        delete(self.string_map[id])
+    }
     delete(self.string_map);
 }
 
