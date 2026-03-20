@@ -107,8 +107,10 @@ test_IntIntInt :: proc(t: ^testing.T) {
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 102, 101), 2)
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 104), 4)
 
-    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 4), 104)
+    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 1), 101)
+    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 2), 101)
     testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 3), 101)
+    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 4), 104)
 
     {
         arr := util.IntIntInt_get_ids_from_id1(&int_int_int, 101)
