@@ -138,10 +138,28 @@ test_Database :: proc(t: ^testing.T) {
     db := database.create()
     defer database.destroy(&db)
 
-    subscription := client.ServerSubscription{
+    engineering := client.ServerSubscription{
+        stream_id = 103,
+        name = strings.clone("engineering"),
+    }
+
+    feedback := client.ServerSubscription{
         stream_id = 101,
         name = strings.clone("feedback"),
     }
 
-    database.process_server_subscription(&db, subscription)
+    design := client.ServerSubscription{
+        stream_id = 102,
+        name = strings.clone("design"),
+    }
+
+    database.process_server_subscription(&db, engineering)
+    database.process_server_subscription(&db, feedback)
+    database.process_server_subscription(&db, design)
+
+    {
+        arr := database.channel_ids_by_name(&db)
+        defer delete(arr)
+        testing.expect(t, slice.equal(arr[:], []int{102, 103, 101}), "channel ids")
+    }
 }
