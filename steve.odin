@@ -93,3 +93,17 @@ test_IntString :: proc(t: ^testing.T) {
     slice.sort(arr[:])
     testing.expect(t, slice.equal(arr[:], []int{101, 102}), "id_array")
 }
+
+@(test)
+test_IntIntInt :: proc(t: ^testing.T) {
+    int_int_int := util.create_IntIntInt()
+    defer util.destroy_IntIntInt(&int_int_int)
+
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 101), 1)
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 102, 101), 2)
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 103, 101), 3)
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 101), 1)
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 101), 1)
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 102, 101), 2)
+    testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 104), 4)
+}

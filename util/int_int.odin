@@ -1,58 +1,41 @@
 package util
 
-IntSet :: map[int]struct{}
-
-IntInt :: struct {
-    fwd_map: map[int]int,
-    reverse_map: map[int]IntSet,
+IntPair :: struct {
+    id1: int,
+    id2: int,
+    seq: int,
 }
 
-create_IntInt :: proc() -> IntInt {
-    return IntInt{
-        fwd_map=make(map[int]int),
-        reverse_map=make(map[int]IntSet),
+IntIntInt :: struct {
+    fwd_map: map[IntPair]int,
+    reverse_map: map[int]IntPair,
+    seq: int,
+}
+
+create_IntIntInt :: proc() -> IntIntInt {
+    return IntIntInt{
+        fwd_map=make(map[IntPair]int),
+        reverse_map=make(map[int]IntPair),
+        seq=0,
     }
 }
 
-destroy_IntInt :: proc(self: ^IntInt) {
+destroy_IntIntInt :: proc(self: ^IntIntInt) {
     delete(self.fwd_map)
-
-    for _, &int_set in self.reverse_map {
-        delete(int_set)
-    }
-
     delete(self.reverse_map)
 }
 
-IntInt_size :: proc(self: ^IntInt) -> int {
-    return len(self.fwd_map)
-}
-
-IntInt_set :: proc(self: ^IntInt, id1: int, id2: int) {
-    self.fwd_map[id1] = id2
-
-    reverse_set: IntSet
-    if id2 in self.reverse_map {
-        reverse_set = self.reverse_map[id2]
-    } else {
-        reverse_set = make(IntSet)
-    }
-    reverse_set[id1] = struct{}{}
-    self.reverse_map[id2] = reverse_set
-}
-
-IntInt_get :: proc(self: ^IntInt, id1: int) -> int {
-    return self.fwd_map[id1]
-}
-
-IntInt_reverse_get :: proc(self: ^IntInt, id2: int) -> [dynamic]int {
-    set := self.reverse_map[id2]
-    arr: [dynamic]int
-
-    for num in set {
-        append(&arr, num)
+IntIntInt_get_id :: proc(self: ^IntIntInt, id1: int, id2: int) -> int {
+    pair := IntPair{ id1=id1, id2=id2 }
+    if pair in self.fwd_map {
+        return self.fwd_map[pair]
     }
 
-    return arr
-}
+    self.seq += 1
+    id := self.seq
 
+    self.fwd_map[pair] = id
+    self.reverse_map[id] = pair
+
+    return id
+}
