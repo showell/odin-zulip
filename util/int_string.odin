@@ -1,5 +1,7 @@
 package util
 
+import "core:strings"
+
 IntString :: struct {
     string_map: map[int]string,
 }
@@ -18,7 +20,10 @@ destroy_IntString :: proc(self: IntString) {
 }
 
 IntString_set :: proc(self: ^IntString, id: int, s: string) {
-    self.string_map[id] = s;
+    if (id in self.string_map) {
+        return
+    }
+    self.string_map[id] = strings.clone(s);
 }
 
 IntString_get_string :: proc(self: IntString, id: int) -> string {

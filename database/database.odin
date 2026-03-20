@@ -1,7 +1,6 @@
 package database
 
 import "core:slice"
-import "core:strings"
 
 import "../client"
 import "../util"
@@ -60,7 +59,7 @@ process_server_subscription :: proc(
     util.IntString_set(
         &db.channel_name,
         subscription.stream_id,
-        strings.clone(subscription.name),
+        subscription.name,
     )
 }
 
@@ -102,7 +101,7 @@ process_server_message :: proc(
     )
     util.IntInt_set(&db.message_content, message_id, angry_dog_content_id)
 
-    util.IntString_set(&db.user_full_name, user_id, strings.clone(full_name))
+    util.IntString_set(&db.user_full_name, user_id, full_name)
 }
 
 get_channel_name :: proc(db: Database, channel_id: int) -> string {

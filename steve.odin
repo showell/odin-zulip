@@ -82,7 +82,9 @@ test_IntString :: proc(t: ^testing.T) {
     defer util.destroy_IntString(num_string)
 
     one := strings.clone("one")
-    two := strings.clone("two")
+    defer delete(one)
+
+    two := "two"
 
     util.IntString_set(&num_string, 101, one)
     util.IntString_set(&num_string, 102, two)
@@ -177,5 +179,25 @@ test_Database :: proc(t: ^testing.T) {
         stream_id = 102,
     }
 
+    message2 := client.ServerMessage{
+        content = "message2",
+        id = 202,
+        sender_full_name = "Foo Barson",
+        sender_id = 1001,
+        subject = "design stuff",
+        stream_id = 102,
+    }
+
+    message3 := client.ServerMessage{
+        content = "message3",
+        id = 203,
+        sender_full_name = "Fred Flintstone",
+        sender_id = 1002,
+        subject = "feedback stuff",
+        stream_id = 101,
+    }
+
     database.process_server_message(&db, message1)
+    database.process_server_message(&db, message2)
+    database.process_server_message(&db, message3)
 }
