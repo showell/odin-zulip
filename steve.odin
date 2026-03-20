@@ -47,7 +47,28 @@ test_IntInt :: proc(t: ^testing.T) {
         testing.expect(t, slice.equal(arr[:], []int{}), "reverse 99")
     }
 
-    testing.expect_value(t, util.IntInt_size(&num_num), 4);
+    testing.expect_value(t, util.IntInt_size(&num_num), 4)
+}
+
+@(test)
+test_InternString :: proc(t: ^testing.T) {
+    intern_string := util.create_InternString()
+    defer util.destroy_InternString(&intern_string)
+
+    testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
+    testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
+    testing.expect_value(t, util.InternString_get_id(&intern_string, "two"), 2)
+    testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
+    testing.expect_value(t, util.InternString_get_string(&intern_string, 1), "one")
+    testing.expect_value(t, util.InternString_get_string(&intern_string, 2), "two")
+
+    three := strings.clone("three")
+    defer delete(three)
+
+    testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
+    testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
+    testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
+    testing.expect_value(t, util.InternString_get_string(&intern_string, 3), "three")
 }
 
 @(test)
