@@ -140,17 +140,17 @@ test_Database :: proc(t: ^testing.T) {
 
     engineering := client.ServerSubscription{
         stream_id = 103,
-        name = strings.clone("engineering"),
+        name = "engineering",
     }
 
     feedback := client.ServerSubscription{
         stream_id = 101,
-        name = strings.clone("feedback"),
+        name = "feedback",
     }
 
     design := client.ServerSubscription{
         stream_id = 102,
-        name = strings.clone("design"),
+        name = "design",
     }
 
     database.process_server_subscription(&db, engineering)
@@ -171,7 +171,7 @@ test_Database :: proc(t: ^testing.T) {
     message1 := client.ServerMessage{
         content = "message1",
         id = 201,
-        sender_full_name = strings.clone("Foo Barson"),
+        sender_full_name = "Foo Barson",
         sender_id = 1001,
         subject = "design stuff",
         stream_id = 102,
