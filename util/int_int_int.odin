@@ -27,7 +27,7 @@ create_IntIntInt :: proc() -> IntIntInt {
     }
 }
 
-destroy_IntIntInt :: proc(self: ^IntIntInt) {
+destroy_IntIntInt :: proc(self: IntIntInt) {
     delete(self.fwd_map)
     delete(self.reverse_map)
 
@@ -69,15 +69,15 @@ IntIntInt_get_id :: proc(self: ^IntIntInt, id1: int, id2: int) -> int {
     return id
 }
 
-IntIntInt_get_id2_count :: proc(self: ^IntIntInt, id1: int) -> int {
+IntIntInt_get_id2_count :: proc(self: IntIntInt, id1: int) -> int {
     return len(self.id2_from_id1[id1])
 }
 
-IntIntInt_get_id2 :: proc(self: ^IntIntInt, id: int) -> int {
+IntIntInt_get_id2 :: proc(self: IntIntInt, id: int) -> int {
     return self.reverse_map[id].id2
 }
 
-IntIntInt_get_ids_from_id1 :: proc(self: ^IntIntInt, id1: int) -> [dynamic]int {
+IntIntInt_get_ids_from_id1 :: proc(self: IntIntInt, id1: int) -> [dynamic]int {
     arr: [dynamic]int
 
     for id in self.ids_from_id1[id1] {

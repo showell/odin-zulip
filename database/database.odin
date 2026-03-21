@@ -49,7 +49,7 @@ destroy :: proc(db: ^Database) {
     util.destroy_InternString(&db.topic_name)
     util.destroy_InternString(&db.content_string)
 
-    util.destroy_IntIntInt(&db.channel_topic)
+    util.destroy_IntIntInt(db.channel_topic)
 }
 
 process_server_subscription :: proc(

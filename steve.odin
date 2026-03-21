@@ -101,7 +101,7 @@ test_IntString :: proc(t: ^testing.T) {
 @(test)
 test_IntIntInt :: proc(t: ^testing.T) {
     int_int_int := util.create_IntIntInt()
-    defer util.destroy_IntIntInt(&int_int_int)
+    defer util.destroy_IntIntInt(int_int_int)
 
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 101), 1)
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 102, 101), 2)
@@ -111,28 +111,28 @@ test_IntIntInt :: proc(t: ^testing.T) {
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 102, 101), 2)
     testing.expect_value(t, util.IntIntInt_get_id(&int_int_int, 101, 104), 4)
 
-    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 1), 101)
-    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 2), 101)
-    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 3), 101)
-    testing.expect_value(t, util.IntIntInt_get_id2(&int_int_int, 4), 104)
+    testing.expect_value(t, util.IntIntInt_get_id2(int_int_int, 1), 101)
+    testing.expect_value(t, util.IntIntInt_get_id2(int_int_int, 2), 101)
+    testing.expect_value(t, util.IntIntInt_get_id2(int_int_int, 3), 101)
+    testing.expect_value(t, util.IntIntInt_get_id2(int_int_int, 4), 104)
 
     {
-        arr := util.IntIntInt_get_ids_from_id1(&int_int_int, 101)
+        arr := util.IntIntInt_get_ids_from_id1(int_int_int, 101)
         defer delete(arr)
         slice.sort(arr[:])
         testing.expect(t, slice.equal(arr[:], []int{1, 4}), "ids from id1")
     }
     {
-        arr := util.IntIntInt_get_ids_from_id1(&int_int_int, 102)
+        arr := util.IntIntInt_get_ids_from_id1(int_int_int, 102)
         defer delete(arr)
         slice.sort(arr[:])
         testing.expect(t, slice.equal(arr[:], []int{2}), "ids from id1")
     }
 
-    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 101), 2)
-    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 102), 1)
-    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 103), 1)
-    testing.expect_value(t, util.IntIntInt_get_id2_count(&int_int_int, 99), 0)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(int_int_int, 101), 2)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(int_int_int, 102), 1)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(int_int_int, 103), 1)
+    testing.expect_value(t, util.IntIntInt_get_id2_count(int_int_int, 99), 0)
 }
 
 @(test)
