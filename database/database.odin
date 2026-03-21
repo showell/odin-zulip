@@ -82,14 +82,22 @@ process_server_message :: proc(
 }
 */
 
-get_channel_name :: proc(db: Database, channel_id: int) -> string {
-    return "foo";
+get_channel_name :: proc(db: Database, channel_index: int) -> string {
+    return db.channel_rows[channel_index].name
 }
 
 get_channel_indexes_by_name :: proc(db: Database) -> []int {
-    row_arr: []ChannelRow = db.channel_rows[:]
+    row_arr: [dynamic]ChannelRow = make(
+        [dynamic]ChannelRow,
+        len(db.channel_rows),
+    )
+    defer delete(row_arr)
 
-    slice.sort_by(row_arr, proc(row1, row2: ChannelRow) -> bool {
+    for row, i in db.channel_rows {
+        row_arr[i] = row
+    }
+
+    slice.sort_by(row_arr[:], proc(row1, row2: ChannelRow) -> bool {
         return row1.name < row2.name
     })
 
