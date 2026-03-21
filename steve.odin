@@ -210,4 +210,5 @@ test_Database :: proc(t: ^testing.T) {
 
     testing.expect_value(t, database.get_topic_count_for_channel(db, 101), 1)
     testing.expect_value(t, database.get_topic_count_for_channel(db, 102), 2)
+    testing.expect_value(t, database.get_topic_count_for_channel(db, 103), 0)
 }
