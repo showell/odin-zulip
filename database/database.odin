@@ -17,6 +17,7 @@ UserRow :: struct {
 
 Database :: struct {
     channel_rows: [dynamic]ChannelRow,
+    channel_id_index_map: map[int]int,
 
     topic_string_arr: [dynamic]string,
     topic_string_index_map: map[string]int,
@@ -28,6 +29,7 @@ Database :: struct {
 create :: proc() -> Database {
     return Database{
         channel_rows = make([dynamic]ChannelRow),
+        channel_id_index_map = make(map[int]int),
 
         topic_string_arr = make([dynamic]string),
         topic_string_index_map = make(map[string]int),
@@ -39,6 +41,7 @@ create :: proc() -> Database {
 
 destroy :: proc(db: ^Database) {
     delete(db.channel_rows)
+    delete(db.channel_id_index_map)
 
     delete(db.topic_string_arr)
     delete(db.topic_string_index_map)
@@ -52,14 +55,17 @@ process_server_subscription :: proc(
     subscription: client.ServerSubscription,
 ) {
     index := len(db.channel_rows)
+    id := subscription.stream_id
 
     channel_row := ChannelRow{
         index = index,
-        id = subscription.stream_id,
+        id = id,
         name = subscription.name,
     }
 
     append(&db.channel_rows, channel_row)
+
+    db.channel_id_index_map[id] = index
 }
 
 get_or_make_index_for_string :: proc(
