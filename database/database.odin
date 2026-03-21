@@ -1,8 +1,14 @@
 package database
 
+import "core:log"
 import "core:slice"
 
 import "../client"
+
+AddressRow :: struct {
+    channel_index: int,
+    topic_index: int,
+}
 
 ChannelRow :: struct {
     index: int,
@@ -22,6 +28,9 @@ Database :: struct {
     topic_string_arr: [dynamic]string,
     topic_string_index_map: map[string]int,
 
+    address_arr: [dynamic]AddressRow,
+    address_to_index_map: map[AddressRow]int,
+
     user_arr: [dynamic]UserRow,
     user_id_index_map: map[int]int,
 }
@@ -34,6 +43,9 @@ create :: proc() -> Database {
         topic_string_arr = make([dynamic]string),
         topic_string_index_map = make(map[string]int),
 
+        address_arr = make([dynamic]AddressRow),
+        address_to_index_map = make(map[AddressRow]int),
+
         user_arr = make([dynamic]UserRow),
         user_id_index_map = make(map[int]int),
     }
@@ -45,6 +57,9 @@ destroy :: proc(db: ^Database) {
 
     delete(db.topic_string_arr)
     delete(db.topic_string_index_map)
+
+    delete(db.address_arr)
+    delete(db.address_to_index_map)
 
     delete(db.user_arr)
     delete(db.user_id_index_map)
@@ -89,20 +104,14 @@ process_server_message :: proc(
 ) {
     /*
     message_id := server_message.id
-    channel_id := server_message.stream_id
     */
+    channel_id := server_message.stream_id
     sender_id := server_message.sender_id
 
     user_name := server_message.sender_full_name
     topic_name := server_message.subject
     content := server_message.content
     // TODO: call fix_content
-
-    topic_index := get_or_make_index_for_string(
-        &db.topic_string_arr,
-        &db.topic_string_index_map,
-        topic_name,
-    )
 
     user_index: int
 
@@ -117,6 +126,33 @@ process_server_message :: proc(
         }
         append(&db.user_arr, user)
         db.user_id_index_map[sender_id] = user_index
+    }
+
+    if !(channel_id in db.channel_id_index_map) {
+        log.error("could not find channel")
+    }
+
+    channel_index := db.channel_id_index_map[channel_id]
+
+    topic_index := get_or_make_index_for_string(
+        &db.topic_string_arr,
+        &db.topic_string_index_map,
+        topic_name,
+    )
+
+    address := AddressRow{
+        channel_index = channel_index,
+        topic_index = topic_index,
+    }
+
+    address_index: int
+
+    if address in db.address_to_index_map {
+        address_index = db.address_to_index_map[address]
+    } else {
+        address_index = len(db.address_arr)
+        append(&db.address_arr, address)
+        db.address_to_index_map[address] = address_index
     }
 
     /*
@@ -135,7 +171,6 @@ process_server_message :: proc(
     )
     util.IntInt_set(&db.message_content, message_id, angry_dog_content_id)
 
-    util.IntString_set(&db.user_full_name, user_id, full_name)
     */
 }
 
