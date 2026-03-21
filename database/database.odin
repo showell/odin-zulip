@@ -112,12 +112,14 @@ get_channel_ids_by_name :: proc(db: Database) -> [dynamic]int {
     arr := util.IntString_id_array(db.channel_name)
 
     cmp :: proc(id1, id2: int, user_data: rawptr) -> bool {
-        db := (^Database)(user_data)
-        return get_channel_name(db^, id1) < get_channel_name(db^, id2)
+        channel_name := (^util.IntString)(user_data)
+        name1 := util.IntString_get_string(channel_name^, id1)
+        name2 := util.IntString_get_string(channel_name^, id2)
+        return name1 < name2
     }
 
-    db_copy := db
-    slice.sort_by_with_data(arr[:], cmp, &db_copy)
+    channel_name_copy := db.channel_name
+    slice.sort_by_with_data(arr[:], cmp, &channel_name_copy)
 
     return arr
 }
