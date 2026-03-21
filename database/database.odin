@@ -3,66 +3,43 @@ package database
 import "core:slice"
 
 import "../client"
-import "../util"
+
+ChannelRow :: struct {
+    index: int,
+    id: int,
+    name: string,
+}
 
 Database :: struct {
-    message_sender: util.IntInt,
-    message_channel: util.IntInt,
-    message_to_channel_topic: util.IntInt,
-    message_content: util.IntInt,
-
-    channel_name: util.IntString,
-    user_full_name: util.IntString,
-
-    topic_name: util.InternString,
-    content_string: util.InternString,
-
-    channel_topic: util.IntIntInt,
+    channel_rows: [dynamic]ChannelRow,
 }
 
 create :: proc() -> Database {
     return Database{
-        message_sender = util.create_IntInt(),
-        message_channel = util.create_IntInt(),
-        message_to_channel_topic = util.create_IntInt(),
-        message_content = util.create_IntInt(),
-
-        channel_name = util.create_IntString(),
-        user_full_name = util.create_IntString(),
-
-        topic_name = util.create_InternString(),
-        content_string = util.create_InternString(),
-
-        channel_topic = util.create_IntIntInt(),
+        channel_rows = make([dynamic]ChannelRow),
     }
 }
 
 destroy :: proc(db: ^Database) {
-    util.destroy_IntInt(db.message_sender)
-    util.destroy_IntInt(db.message_channel)
-    util.destroy_IntInt(db.message_to_channel_topic)
-    util.destroy_IntInt(db.message_content)
-
-    util.destroy_IntString(db.channel_name)
-    util.destroy_IntString(db.user_full_name)
-
-    util.destroy_InternString(db.topic_name)
-    util.destroy_InternString(db.content_string)
-
-    util.destroy_IntIntInt(db.channel_topic)
+    delete(db.channel_rows)
 }
 
 process_server_subscription :: proc(
     db: ^Database,
     subscription: client.ServerSubscription,
 ) {
-    util.IntString_set(
-        &db.channel_name,
-        subscription.stream_id,
-        subscription.name,
-    )
+    index := len(db.channel_rows)
+
+    channel_row := ChannelRow{
+        index = index,
+        id = subscription.stream_id,
+        name = subscription.name,
+    }
+
+    append(&db.channel_rows, channel_row)
 }
 
+/*
 process_server_message :: proc(
     db: ^Database,
     server_message: client.ServerMessage,
@@ -103,24 +80,24 @@ process_server_message :: proc(
 
     util.IntString_set(&db.user_full_name, user_id, full_name)
 }
+*/
 
 get_channel_name :: proc(db: Database, channel_id: int) -> string {
-    return util.IntString_get_string(db.channel_name, channel_id)
+    return "foo";
 }
 
-get_channel_ids_by_name :: proc(db: Database) -> []int {
-    arr := util.IntString_sorted_id_str_array(db.channel_name)
-    defer delete(arr)
+get_channel_indexes_by_name :: proc(db: Database) -> []int {
+    row_arr: []ChannelRow = db.channel_rows[:]
 
-    result: []int = make([]int, len(arr))
+    slice.sort_by(row_arr, proc(row1, row2: ChannelRow) -> bool {
+        return row1.name < row2.name
+    })
 
-    for id_str, i in arr {
-        result[i] = id_str.id
+    arr := make([]int, len(row_arr))
+
+    for row, i in row_arr {
+        arr[i] = row.index
     }
 
-    return result
-}
-
-get_topic_count_for_channel :: proc(db: Database, channel_id: int) -> int {
-    return util.IntIntInt_get_id2_count(db.channel_topic, channel_id)
+    return arr
 }
