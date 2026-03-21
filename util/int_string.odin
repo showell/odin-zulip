@@ -1,5 +1,6 @@
 package util
 
+import "core:slice"
 import "core:strings"
 
 IntString :: struct {
@@ -30,11 +31,23 @@ IntString_get_string :: proc(self: IntString, id: int) -> string {
     return self.string_map[id]
 }
 
-IntString_id_array :: proc(self: IntString) -> [dynamic]int {
-    arr: [dynamic]int
+IdStr :: struct {
+    id: int,
+    str: string,
+}
 
-    for num in self.string_map {
-        append(&arr, num)
+IntString_sorted_id_str_array :: proc(self: IntString) -> []IdStr {
+    arr: []IdStr = make([]IdStr, len(self.string_map))
+
+    i := 0
+    for id, str in self.string_map {
+        arr[i] = { id=id, str=str }
+        i += 1
     }
+
+    slice.sort_by(arr[:], proc(struct1, struct2: IdStr) -> bool {
+        return struct1.str < struct2.str
+    })
+
     return arr
 }

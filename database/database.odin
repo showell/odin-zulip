@@ -108,20 +108,17 @@ get_channel_name :: proc(db: Database, channel_id: int) -> string {
     return util.IntString_get_string(db.channel_name, channel_id)
 }
 
-get_channel_ids_by_name :: proc(db: Database) -> [dynamic]int {
-    arr := util.IntString_id_array(db.channel_name)
+get_channel_ids_by_name :: proc(db: Database) -> []int {
+    arr := util.IntString_sorted_id_str_array(db.channel_name)
+    defer delete(arr)
 
-    cmp :: proc(id1, id2: int, user_data: rawptr) -> bool {
-        channel_name := (^util.IntString)(user_data)
-        name1 := util.IntString_get_string(channel_name^, id1)
-        name2 := util.IntString_get_string(channel_name^, id2)
-        return name1 < name2
+    result: []int = make([]int, len(arr))
+
+    for id_str, i in arr {
+        result[i] = id_str.id
     }
 
-    channel_name_copy := db.channel_name
-    slice.sort_by_with_data(arr[:], cmp, &channel_name_copy)
-
-    return arr
+    return result
 }
 
 get_topic_count_for_channel :: proc(db: Database, channel_id: int) -> int {
