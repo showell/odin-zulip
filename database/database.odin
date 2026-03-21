@@ -10,11 +10,19 @@ ChannelRow :: struct {
     name: string,
 }
 
+UserRow :: struct {
+    id: int,
+    name: string,
+}
+
 Database :: struct {
     channel_rows: [dynamic]ChannelRow,
 
     topic_string_arr: [dynamic]string,
     topic_string_index_map: map[string]int,
+
+    user_arr: [dynamic]UserRow,
+    user_id_index_map: map[int]int,
 }
 
 create :: proc() -> Database {
@@ -23,6 +31,9 @@ create :: proc() -> Database {
 
         topic_string_arr = make([dynamic]string),
         topic_string_index_map = make(map[string]int),
+
+        user_arr = make([dynamic]UserRow),
+        user_id_index_map = make(map[int]int),
     }
 }
 
@@ -30,8 +41,10 @@ destroy :: proc(db: ^Database) {
     delete(db.channel_rows)
 
     delete(db.topic_string_arr)
-
     delete(db.topic_string_index_map)
+
+    delete(db.user_arr)
+    delete(db.user_id_index_map)
 }
 
 process_server_subscription :: proc(
@@ -71,9 +84,8 @@ process_server_message :: proc(
     /*
     message_id := server_message.id
     channel_id := server_message.stream_id
-    sender_id := server_message.sender_id
-    user_id := sender_id
     */
+    sender_id := server_message.sender_id
 
     user_name := server_message.sender_full_name
     topic_name := server_message.subject
@@ -85,6 +97,21 @@ process_server_message :: proc(
         &db.topic_string_index_map,
         topic_name,
     )
+
+    user_index: int
+
+    if (sender_id in db.user_id_index_map) {
+        user_index = db.user_id_index_map[sender_id]
+    } else {
+        user_index = len(db.user_arr)
+
+        user := UserRow{
+            id = sender_id,
+            name = user_name,
+        }
+        append(&db.user_arr, user)
+        db.user_id_index_map[sender_id] = user_index
+    }
 
     /*
     angry_dog_channel_topic_id := util.IntIntInt_get_id(
