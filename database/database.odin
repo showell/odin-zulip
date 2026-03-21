@@ -123,3 +123,7 @@ get_channel_ids_by_name :: proc(db: Database) -> [dynamic]int {
 
     return arr
 }
+
+get_topic_count_for_channel :: proc(db: Database, channel_id: int) -> int {
+    return util.IntIntInt_get_id2_count(db.channel_topic, channel_id)
+}

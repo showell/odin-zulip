@@ -199,7 +199,20 @@ test_Database :: proc(t: ^testing.T) {
         stream_id = 101,
     }
 
+    message4 := client.ServerMessage{
+        content = "message4",
+        id = 204,
+        sender_full_name = "Fred Flintstone",
+        sender_id = 1002,
+        subject = "another design topic",
+        stream_id = 102,
+    }
+
     database.process_server_message(&db, message1)
     database.process_server_message(&db, message2)
     database.process_server_message(&db, message3)
+    database.process_server_message(&db, message4)
+
+    testing.expect_value(t, database.get_topic_count_for_channel(db, 101), 1)
+    testing.expect_value(t, database.get_topic_count_for_channel(db, 102), 2)
 }
