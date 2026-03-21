@@ -38,16 +38,16 @@ create :: proc() -> Database {
 }
 
 destroy :: proc(db: ^Database) {
-    util.destroy_IntInt(&db.message_sender)
-    util.destroy_IntInt(&db.message_channel)
-    util.destroy_IntInt(&db.message_to_channel_topic)
-    util.destroy_IntInt(&db.message_content)
+    util.destroy_IntInt(db.message_sender)
+    util.destroy_IntInt(db.message_channel)
+    util.destroy_IntInt(db.message_to_channel_topic)
+    util.destroy_IntInt(db.message_content)
 
     util.destroy_IntString(db.channel_name)
     util.destroy_IntString(db.user_full_name)
 
-    util.destroy_InternString(&db.topic_name)
-    util.destroy_InternString(&db.content_string)
+    util.destroy_InternString(db.topic_name)
+    util.destroy_InternString(db.content_string)
 
     util.destroy_IntIntInt(db.channel_topic)
 }

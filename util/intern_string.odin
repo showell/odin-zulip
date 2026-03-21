@@ -16,7 +16,7 @@ create_InternString :: proc() -> InternString {
     }
 }
 
-destroy_InternString :: proc(self: ^InternString) {
+destroy_InternString :: proc(self: InternString) {
     for id in self.string_map {
         delete(self.string_map[id])
     }
@@ -36,6 +36,6 @@ InternString_get_id :: proc(self: ^InternString, s: string) -> int {
     return id
 }
 
-InternString_get_string :: proc(self: ^InternString, id: int) -> string {
+InternString_get_string :: proc(self: InternString, id: int) -> string {
     return self.string_map[id]
 }

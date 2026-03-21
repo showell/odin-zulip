@@ -14,7 +14,7 @@ create_IntInt :: proc() -> IntInt {
     }
 }
 
-destroy_IntInt :: proc(self: ^IntInt) {
+destroy_IntInt :: proc(self: IntInt) {
     delete(self.fwd_map)
 
     for _, &int_set in self.reverse_map {
@@ -24,7 +24,7 @@ destroy_IntInt :: proc(self: ^IntInt) {
     delete(self.reverse_map)
 }
 
-IntInt_size :: proc(self: ^IntInt) -> int {
+IntInt_size :: proc(self: IntInt) -> int {
     return len(self.fwd_map)
 }
 
@@ -36,11 +36,11 @@ IntInt_set :: proc(self: ^IntInt, id1: int, id2: int) {
     self.reverse_map[id2] = reverse_set
 }
 
-IntInt_get :: proc(self: ^IntInt, id1: int) -> int {
+IntInt_get :: proc(self: IntInt, id1: int) -> int {
     return self.fwd_map[id1]
 }
 
-IntInt_reverse_get :: proc(self: ^IntInt, id2: int) -> [dynamic]int {
+IntInt_reverse_get :: proc(self: IntInt, id2: int) -> [dynamic]int {
     set := self.reverse_map[id2]
     arr: [dynamic]int
 

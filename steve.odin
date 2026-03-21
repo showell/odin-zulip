@@ -13,56 +13,56 @@ import "util"
 @(test)
 test_IntInt :: proc(t: ^testing.T) {
     num_num := util.create_IntInt()
-    defer util.destroy_IntInt(&num_num)
+    defer util.destroy_IntInt(num_num)
 
     util.IntInt_set(&num_num, 5, 50)
     util.IntInt_set(&num_num, 6, 150)
     util.IntInt_set(&num_num, 7, 50)
     util.IntInt_set(&num_num, 8, 50)
 
-    testing.expect(t, util.IntInt_get(&num_num, 5) == 50, "get 5")
-    testing.expect(t, util.IntInt_get(&num_num, 6) == 150, "get 6")
-    testing.expect(t, util.IntInt_get(&num_num, 7) == 50, "get 7")
-    testing.expect(t, util.IntInt_get(&num_num, 8) == 50, "get 8")
+    testing.expect(t, util.IntInt_get(num_num, 5) == 50, "get 5")
+    testing.expect(t, util.IntInt_get(num_num, 6) == 150, "get 6")
+    testing.expect(t, util.IntInt_get(num_num, 7) == 50, "get 7")
+    testing.expect(t, util.IntInt_get(num_num, 8) == 50, "get 8")
 
-    reverse_sort :: proc(num_num: ^util.IntInt, id: int) -> [dynamic]int {
+    reverse_sort :: proc(num_num: util.IntInt, id: int) -> [dynamic]int {
         arr := util.IntInt_reverse_get(num_num, id)
         slice.sort(arr[:])
         return arr
     }
 
     {
-        arr := reverse_sort(&num_num, 50)
+        arr := reverse_sort(num_num, 50)
         defer delete(arr)
         testing.expect(t, slice.equal(arr[:], []int{5, 7, 8}), "reverse 50")
     }
 
     {
-        arr := reverse_sort(&num_num, 150)
+        arr := reverse_sort(num_num, 150)
         defer delete(arr)
         testing.expect(t, slice.equal(arr[:], []int{6}), "reverse 50")
     }
 
     {
-        arr := reverse_sort(&num_num, 99)
+        arr := reverse_sort(num_num, 99)
         defer delete(arr)
         testing.expect(t, slice.equal(arr[:], []int{}), "reverse 99")
     }
 
-    testing.expect_value(t, util.IntInt_size(&num_num), 4)
+    testing.expect_value(t, util.IntInt_size(num_num), 4)
 }
 
 @(test)
 test_InternString :: proc(t: ^testing.T) {
     intern_string := util.create_InternString()
-    defer util.destroy_InternString(&intern_string)
+    defer util.destroy_InternString(intern_string)
 
     testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
     testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
     testing.expect_value(t, util.InternString_get_id(&intern_string, "two"), 2)
     testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
-    testing.expect_value(t, util.InternString_get_string(&intern_string, 1), "one")
-    testing.expect_value(t, util.InternString_get_string(&intern_string, 2), "two")
+    testing.expect_value(t, util.InternString_get_string(intern_string, 1), "one")
+    testing.expect_value(t, util.InternString_get_string(intern_string, 2), "two")
 
     three := strings.clone("three")
     defer delete(three)
@@ -70,10 +70,12 @@ test_InternString :: proc(t: ^testing.T) {
     testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
     testing.expect_value(t, util.InternString_get_id(&intern_string, "one"), 1)
     testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
-    testing.expect_value(t, util.InternString_get_string(&intern_string, 3), "three")
+    testing.expect_value(t, util.InternString_get_string(intern_string, 3), "three")
 
     testing.expect_value(t, util.InternString_get_id(&intern_string, three), 3)
     testing.expect_value(t, util.InternString_get_id(&intern_string, "two"), 2)
+    testing.expect_value(t, util.InternString_get_string(intern_string, 3), "three")
+    testing.expect_value(t, util.InternString_get_string(intern_string, 1), "one")
 }
 
 @(test)
