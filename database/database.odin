@@ -13,39 +13,25 @@ ChannelRow :: struct {
 Database :: struct {
     channel_rows: [dynamic]ChannelRow,
 
-    content_string_arr: [dynamic]string,
     topic_string_arr: [dynamic]string,
-    user_name_string_arr: [dynamic]string,
-
-    content_string_index_map: map[string]int,
     topic_string_index_map: map[string]int,
-    user_name_string_index_map: map[string]int,
 }
 
 create :: proc() -> Database {
     return Database{
         channel_rows = make([dynamic]ChannelRow),
 
-        content_string_arr = make([dynamic]string),
         topic_string_arr = make([dynamic]string),
-        user_name_string_arr = make([dynamic]string),
-
-        content_string_index_map = make(map[string]int),
         topic_string_index_map = make(map[string]int),
-        user_name_string_index_map = make(map[string]int),
     }
 }
 
 destroy :: proc(db: ^Database) {
     delete(db.channel_rows)
 
-    delete(db.content_string_arr)
     delete(db.topic_string_arr)
-    delete(db.user_name_string_arr)
 
-    delete(db.content_string_index_map)
     delete(db.topic_string_index_map)
-    delete(db.user_name_string_index_map)
 }
 
 process_server_subscription :: proc(
@@ -63,7 +49,7 @@ process_server_subscription :: proc(
     append(&db.channel_rows, channel_row)
 }
 
-get_or_make_id_for_string :: proc(
+get_or_make_index_for_string :: proc(
     string_array: ^[dynamic]string,
     string_index_map: ^map[string]int,
     str: string,
@@ -94,22 +80,10 @@ process_server_message :: proc(
     content := server_message.content
     // TODO: call fix_content
 
-    content_index := get_or_make_id_for_string(
-        &db.content_string_arr,
-        &db.content_string_index_map,
-        content,
-    )
-
-    topic_index := get_or_make_id_for_string(
+    topic_index := get_or_make_index_for_string(
         &db.topic_string_arr,
         &db.topic_string_index_map,
         topic_name,
-    )
-
-    user_name_index := get_or_make_id_for_string(
-        &db.user_name_string_arr,
-        &db.user_name_string_index_map,
-        user_name,
     )
 
     /*
