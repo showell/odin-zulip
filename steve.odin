@@ -43,7 +43,6 @@ test_Database :: proc(t: ^testing.T) {
     testing.expect_value(t, database.get_channel_name(db, 0), "engineering")
     testing.expect_value(t, database.get_channel_name(db, 1), "feedback")
 
-    /*
     message1 := client.ServerMessage{
         content = "message1",
         id = 201,
@@ -84,6 +83,8 @@ test_Database :: proc(t: ^testing.T) {
     database.process_server_message(&db, message2)
     database.process_server_message(&db, message3)
     database.process_server_message(&db, message4)
+
+    /*
 
     testing.expect_value(t, database.get_topic_count_for_channel(db, 101), 1)
     testing.expect_value(t, database.get_topic_count_for_channel(db, 102), 2)

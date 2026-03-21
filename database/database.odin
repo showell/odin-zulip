@@ -12,16 +12,40 @@ ChannelRow :: struct {
 
 Database :: struct {
     channel_rows: [dynamic]ChannelRow,
+
+    content_string_arr: [dynamic]string,
+    topic_string_arr: [dynamic]string,
+    user_name_string_arr: [dynamic]string,
+
+    content_string_index_map: map[string]int,
+    topic_string_index_map: map[string]int,
+    user_name_string_index_map: map[string]int,
 }
 
 create :: proc() -> Database {
     return Database{
         channel_rows = make([dynamic]ChannelRow),
+
+        content_string_arr = make([dynamic]string),
+        topic_string_arr = make([dynamic]string),
+        user_name_string_arr = make([dynamic]string),
+
+        content_string_index_map = make(map[string]int),
+        topic_string_index_map = make(map[string]int),
+        user_name_string_index_map = make(map[string]int),
     }
 }
 
 destroy :: proc(db: ^Database) {
     delete(db.channel_rows)
+
+    delete(db.content_string_arr)
+    delete(db.topic_string_arr)
+    delete(db.user_name_string_arr)
+
+    delete(db.content_string_index_map)
+    delete(db.topic_string_index_map)
+    delete(db.user_name_string_index_map)
 }
 
 process_server_subscription :: proc(
@@ -39,30 +63,56 @@ process_server_subscription :: proc(
     append(&db.channel_rows, channel_row)
 }
 
-/*
+get_or_make_id_for_string :: proc(
+    string_array: ^[dynamic]string,
+    string_index_map: ^map[string]int,
+    str: string,
+) -> int {
+    if str in string_index_map {
+        return string_index_map[str]
+    }
+
+    index := len(string_array)
+    append(string_array, str)
+    string_index_map[str] = index
+    return index
+}
+
 process_server_message :: proc(
     db: ^Database,
     server_message: client.ServerMessage,
 ) {
+    /*
     message_id := server_message.id
     channel_id := server_message.stream_id
     sender_id := server_message.sender_id
     user_id := sender_id
+    */
 
-    full_name := server_message.sender_full_name
+    user_name := server_message.sender_full_name
     topic_name := server_message.subject
     content := server_message.content
     // TODO: call fix_content
 
-    angry_dog_content_id := util.InternString_get_id(
-        &db.content_string,
+    content_index := get_or_make_id_for_string(
+        &db.content_string_arr,
+        &db.content_string_index_map,
         content,
     )
-    angry_dog_topic_id := util.InternString_get_id(
-        &db.topic_name,
+
+    topic_index := get_or_make_id_for_string(
+        &db.topic_string_arr,
+        &db.topic_string_index_map,
         topic_name,
     )
 
+    user_name_index := get_or_make_id_for_string(
+        &db.user_name_string_arr,
+        &db.user_name_string_index_map,
+        user_name,
+    )
+
+    /*
     angry_dog_channel_topic_id := util.IntIntInt_get_id(
         &db.channel_topic,
         channel_id,
@@ -79,8 +129,8 @@ process_server_message :: proc(
     util.IntInt_set(&db.message_content, message_id, angry_dog_content_id)
 
     util.IntString_set(&db.user_full_name, user_id, full_name)
+    */
 }
-*/
 
 get_channel_name :: proc(db: Database, channel_index: int) -> string {
     return db.channel_rows[channel_index].name
