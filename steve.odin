@@ -117,8 +117,16 @@ test_Database :: proc(t: ^testing.T) {
         defer delete(topic_rows)
 
         expected_topic_rows := []TopicRow{
-            TopicRow{ address_index = 2, name = "another design topic", topic_index = 2 },
-            TopicRow{ address_index = 0, name = "design stuff", topic_index = 0 },
+            TopicRow{
+                address_index = 2,
+                name = "another design topic",
+                topic_index = 2,
+            },
+            TopicRow{
+                address_index = 0,
+                name = "design stuff",
+                topic_index = 0,
+            },
         }
 
         testing.expect(
