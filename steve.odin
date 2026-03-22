@@ -49,6 +49,10 @@ test_Database :: proc(t: ^testing.T) {
         )
     }
 
+    testing.expect_value(t, database.get_channel_index(db, 103), index_engineering)
+    testing.expect_value(t, database.get_channel_index(db, 101), index_feedback)
+    testing.expect_value(t, database.get_channel_index(db, 102), index_design)
+
     testing.expect_value(t, database.get_channel_name(db, 0), "engineering")
     testing.expect_value(t, database.get_channel_name(db, 1), "feedback")
     testing.expect_value(t, database.get_channel_name(db, 2), "design")

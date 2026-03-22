@@ -25,6 +25,11 @@ MessageRow :: struct {
     address_index: int,
 }
 
+TopicRow :: struct {
+    index: int,
+    name: string,
+}
+
 UserRow :: struct {
     id: int,
     name: string,
@@ -223,6 +228,10 @@ process_server_message :: proc(
     db.channel_index_to_topic_index_set[channel_index] = topic_index_set
 }
 
+get_channel_index :: proc(db: Database, channel_id: int) -> int {
+    return db.channel_id_index_map[channel_id]
+}
+
 get_channel_id :: proc(db: Database, channel_index: int) -> int {
     return db.channel_rows[channel_index].id
 }
@@ -260,4 +269,39 @@ get_num_topics_for_channel_index :: proc(db: Database, channel_index: int) -> in
         return 0
     }
     return len(db.channel_index_to_topic_index_set[channel_index])
+}
+
+get_topic_rows_for_channel_index_by_name :: proc(
+    db: Database,
+    channel_index: int,
+) -> [dynamic]TopicRow {
+    if !(channel_index in db.channel_index_to_topic_index_set) {
+        return make([dynamic]TopicRow, 0)
+    }
+
+    topic_index_set := db.channel_index_to_topic_index_set[channel_index]
+
+    row_arr: [dynamic]TopicRow = make([dynamic]TopicRow)
+
+    for topic_index, i in topic_index_set {
+        if !topic_index_set[topic_index] {
+            log.error("unexpected")
+            continue
+        }
+
+        topic_name := db.topic_string_arr[topic_index]
+
+        topic_row := TopicRow{
+            index = topic_index,
+            name = topic_name,
+        }
+
+        append(&row_arr, topic_row)
+    }
+
+    slice.sort_by(row_arr[:], proc(row1, row2: TopicRow) -> bool {
+        return row1.name < row2.name
+    })
+
+    return row_arr
 }
