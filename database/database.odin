@@ -333,3 +333,9 @@ message_rows_for_address_index :: proc(db: Database, address_index: int) -> [dyn
 get_sender_name_for_sender_index :: proc(db: Database, sender_index: int) -> string {
     return db.user_arr[sender_index].name
 }
+
+get_topic_name_for_address_index :: proc(db: Database, address_index: int) -> string {
+    topic_index := db.address_arr[address_index].topic_index
+    return db.topic_string_arr[topic_index]
+}
+
