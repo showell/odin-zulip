@@ -106,6 +106,9 @@ test_Database :: proc(t: ^testing.T) {
     database.process_server_message(&db, message3)
     database.process_server_message(&db, message4)
 
+    testing.expect_value(t, database.get_sender_name_for_sender_index(db, 0), "Foo Barson")
+    testing.expect_value(t, database.get_sender_name_for_sender_index(db, 1), "Fred Flintstone")
+
     testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_design), 2)
     testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_engineering), 0)
     testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_feedback), 1)
@@ -139,5 +142,17 @@ test_Database :: proc(t: ^testing.T) {
             ),
             "topic rows for design",
         )
+    }
+
+    {
+        message_rows := database.message_rows_for_address_index(db, 0)
+        defer delete(message_rows)
+
+        log.info(message_rows)
+
+        testing.expect_value(t, len(message_rows), 2)
+
+        testing.expect_value(t, message_rows[0].content, "message1")
+        testing.expect_value(t, message_rows[1].content, "message2")
     }
 }

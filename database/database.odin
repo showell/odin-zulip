@@ -312,3 +312,24 @@ get_topic_rows_for_channel_index_by_name :: proc(
 
     return row_arr
 }
+
+message_rows_for_address_index :: proc(db: Database, address_index: int) -> [dynamic]MessageRow {
+    message_index_set := db.address_index_to_message_index_set[address_index]
+    arr := make([dynamic]MessageRow, len(message_index_set))
+
+    i := 0
+    for message_index in message_index_set {
+        arr[i] = db.message_arr[message_index]
+        i += 1
+    }
+
+    slice.sort_by(arr[:], proc(row1, row2: MessageRow) -> bool {
+        return row1.message_id < row2.message_id
+    })
+
+    return arr
+}
+
+get_sender_name_for_sender_index :: proc(db: Database, sender_index: int) -> string {
+    return db.user_arr[sender_index].name
+}
