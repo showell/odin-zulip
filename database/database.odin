@@ -5,6 +5,8 @@ import "core:slice"
 
 import "../client"
 
+IndexSet :: map[int]bool
+
 AddressRow :: struct {
     channel_index: int,
     topic_index: int,
@@ -42,6 +44,8 @@ Database :: struct {
     user_id_index_map: map[int]int,
 
     message_arr: [dynamic]MessageRow,
+
+    address_index_to_message_index_set: map[int]IndexSet,
 }
 
 create :: proc() -> Database {
@@ -59,6 +63,8 @@ create :: proc() -> Database {
         user_id_index_map = make(map[int]int),
 
         message_arr = make([dynamic]MessageRow),
+
+        address_index_to_message_index_set = make(map[int]IndexSet),
     }
 }
 
@@ -76,6 +82,12 @@ destroy :: proc(db: ^Database) {
     delete(db.user_id_index_map)
 
     delete(db.message_arr)
+
+    for _, message_index_set in db.address_index_to_message_index_set {
+        delete(message_index_set)
+    }
+
+    delete(db.address_index_to_message_index_set)
 }
 
 process_server_subscription :: proc(
@@ -166,6 +178,8 @@ process_server_message :: proc(
         db.address_to_index_map[address] = address_index
     }
 
+    message_index := len(db.message_arr)
+
     message := MessageRow{
         message_id = message_id,
         sender_index = user_index,
@@ -174,6 +188,17 @@ process_server_message :: proc(
     }
 
     append(&db.message_arr, message)
+
+    message_index_set: IndexSet
+
+    if (address_index in db.address_index_to_message_index_set) {
+        message_index_set = db.address_index_to_message_index_set[address_index]
+    } else {
+        message_index_set = make(map[int]bool)
+    }
+
+    message_index_set[message_index] = true
+    db.address_index_to_message_index_set[address_index] = message_index_set
 }
 
 get_channel_name :: proc(db: Database, channel_index: int) -> string {
