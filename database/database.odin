@@ -219,9 +219,12 @@ process_server_message :: proc(
         topic_index_set = make(map[int]bool)
     }
 
-    topic_index_set[message_index] = true
+    topic_index_set[topic_index] = true
     db.channel_index_to_topic_index_set[channel_index] = topic_index_set
+}
 
+get_channel_id :: proc(db: Database, channel_index: int) -> int {
+    return db.channel_rows[channel_index].id
 }
 
 get_channel_name :: proc(db: Database, channel_index: int) -> string {
@@ -250,4 +253,11 @@ get_channel_indexes_by_name :: proc(db: Database) -> []int {
     }
 
     return arr
+}
+
+get_num_topics_for_channel_index :: proc(db: Database, channel_index: int) -> int {
+    if !(channel_index in db.channel_index_to_topic_index_set) {
+        return 0
+    }
+    return len(db.channel_index_to_topic_index_set[channel_index])
 }

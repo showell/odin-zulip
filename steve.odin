@@ -18,16 +18,19 @@ test_Database :: proc(t: ^testing.T) {
         stream_id = 103,
         name = "engineering",
     }
+    index_engineering := 0
 
     feedback := client.ServerSubscription{
         stream_id = 101,
         name = "feedback",
     }
+    index_feedback := 1
 
     design := client.ServerSubscription{
         stream_id = 102,
         name = "design",
     }
+    index_design := 2
 
     database.process_server_subscription(&db, engineering)
     database.process_server_subscription(&db, feedback)
@@ -36,12 +39,27 @@ test_Database :: proc(t: ^testing.T) {
     {
         arr := database.get_channel_indexes_by_name(db)
         defer delete(arr)
-        testing.expect(t, slice.equal(arr[:], []int{2, 0, 1}), "channel ids")
+        testing.expect(
+            t,
+            slice.equal(
+                arr[:],
+                []int{index_design, index_engineering, index_feedback},
+            ),
+            "channel ids",
+        )
     }
 
-    testing.expect_value(t, database.get_channel_name(db, 2), "design")
     testing.expect_value(t, database.get_channel_name(db, 0), "engineering")
     testing.expect_value(t, database.get_channel_name(db, 1), "feedback")
+    testing.expect_value(t, database.get_channel_name(db, 2), "design")
+
+    testing.expect_value(t, database.get_channel_id(db, 0), 103)
+    testing.expect_value(t, database.get_channel_id(db, 1), 101)
+    testing.expect_value(t, database.get_channel_id(db, 2), 102)
+
+    testing.expect_value(t, database.get_num_topics_for_channel_index(db, 0), 0)
+    testing.expect_value(t, database.get_num_topics_for_channel_index(db, 1), 0)
+    testing.expect_value(t, database.get_num_topics_for_channel_index(db, 2), 0)
 
     message1 := client.ServerMessage{
         content = "message1",
@@ -84,10 +102,7 @@ test_Database :: proc(t: ^testing.T) {
     database.process_server_message(&db, message3)
     database.process_server_message(&db, message4)
 
-    /*
-
-    testing.expect_value(t, database.get_topic_count_for_channel(db, 101), 1)
-    testing.expect_value(t, database.get_topic_count_for_channel(db, 102), 2)
-    testing.expect_value(t, database.get_topic_count_for_channel(db, 103), 0)
-    */
+    testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_design), 2)
+    testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_engineering), 0)
+    testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_feedback), 1)
 }
