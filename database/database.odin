@@ -46,6 +46,8 @@ Database :: struct {
     message_arr: [dynamic]MessageRow,
 
     address_index_to_message_index_set: map[int]IndexSet,
+
+    channel_index_to_topic_index_set: map[int]IndexSet,
 }
 
 create :: proc() -> Database {
@@ -65,6 +67,7 @@ create :: proc() -> Database {
         message_arr = make([dynamic]MessageRow),
 
         address_index_to_message_index_set = make(map[int]IndexSet),
+        channel_index_to_topic_index_set = make(map[int]IndexSet),
     }
 }
 
@@ -88,6 +91,12 @@ destroy :: proc(db: ^Database) {
     }
 
     delete(db.address_index_to_message_index_set)
+
+    for _, topic_index_set in db.channel_index_to_topic_index_set {
+        delete(topic_index_set)
+    }
+
+    delete(db.channel_index_to_topic_index_set)
 }
 
 process_server_subscription :: proc(
@@ -189,6 +198,7 @@ process_server_message :: proc(
 
     append(&db.message_arr, message)
 
+    // ADDRESS -> list of MESSAGE
     message_index_set: IndexSet
 
     if (address_index in db.address_index_to_message_index_set) {
@@ -199,6 +209,19 @@ process_server_message :: proc(
 
     message_index_set[message_index] = true
     db.address_index_to_message_index_set[address_index] = message_index_set
+
+    // CHANNEL -> list of TOPIC
+    topic_index_set: IndexSet
+
+    if (channel_index in db.channel_index_to_topic_index_set) {
+        topic_index_set = db.channel_index_to_topic_index_set[channel_index]
+    } else {
+        topic_index_set = make(map[int]bool)
+    }
+
+    topic_index_set[message_index] = true
+    db.channel_index_to_topic_index_set[channel_index] = topic_index_set
+
 }
 
 get_channel_name :: proc(db: Database, channel_index: int) -> string {
