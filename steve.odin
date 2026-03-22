@@ -109,4 +109,25 @@ test_Database :: proc(t: ^testing.T) {
     testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_design), 2)
     testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_engineering), 0)
     testing.expect_value(t, database.get_num_topics_for_channel_index(db, index_feedback), 1)
+
+    TopicRow :: database.TopicRow
+
+    {
+        topic_rows := database.get_topic_rows_for_channel_index_by_name(db, index_design)
+        defer delete(topic_rows)
+
+        expected_topic_rows := []TopicRow{
+            TopicRow{ index = 2, name = "another design topic" },
+            TopicRow{ index = 0, name = "design stuff" },
+        }
+
+        testing.expect(
+            t,
+            slice.equal(
+                topic_rows[:],
+                expected_topic_rows,
+            ),
+            "topic rows for design",
+        )
+    }
 }
