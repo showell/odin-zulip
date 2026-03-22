@@ -26,7 +26,8 @@ MessageRow :: struct {
 }
 
 TopicRow :: struct {
-    index: int,
+    address_index: int,
+    topic_index: int,
     name: string,
 }
 
@@ -52,7 +53,7 @@ Database :: struct {
 
     address_index_to_message_index_set: map[int]IndexSet,
 
-    channel_index_to_topic_index_set: map[int]IndexSet,
+    channel_index_to_address_index_set: map[int]IndexSet,
 }
 
 create :: proc() -> Database {
@@ -72,7 +73,7 @@ create :: proc() -> Database {
         message_arr = make([dynamic]MessageRow),
 
         address_index_to_message_index_set = make(map[int]IndexSet),
-        channel_index_to_topic_index_set = make(map[int]IndexSet),
+        channel_index_to_address_index_set = make(map[int]IndexSet),
     }
 }
 
@@ -97,11 +98,11 @@ destroy :: proc(db: ^Database) {
 
     delete(db.address_index_to_message_index_set)
 
-    for _, topic_index_set in db.channel_index_to_topic_index_set {
-        delete(topic_index_set)
+    for _, address_index_set in db.channel_index_to_address_index_set {
+        delete(address_index_set)
     }
 
-    delete(db.channel_index_to_topic_index_set)
+    delete(db.channel_index_to_address_index_set)
 }
 
 process_server_subscription :: proc(
@@ -216,16 +217,16 @@ process_server_message :: proc(
     db.address_index_to_message_index_set[address_index] = message_index_set
 
     // CHANNEL -> list of TOPIC
-    topic_index_set: IndexSet
+    address_index_set: IndexSet
 
-    if (channel_index in db.channel_index_to_topic_index_set) {
-        topic_index_set = db.channel_index_to_topic_index_set[channel_index]
+    if (channel_index in db.channel_index_to_address_index_set) {
+        address_index_set = db.channel_index_to_address_index_set[channel_index]
     } else {
-        topic_index_set = make(map[int]bool)
+        address_index_set = make(map[int]bool)
     }
 
-    topic_index_set[topic_index] = true
-    db.channel_index_to_topic_index_set[channel_index] = topic_index_set
+    address_index_set[address_index] = true
+    db.channel_index_to_address_index_set[channel_index] = address_index_set
 }
 
 get_channel_index :: proc(db: Database, channel_id: int) -> int {
@@ -265,34 +266,36 @@ get_channel_indexes_by_name :: proc(db: Database) -> []int {
 }
 
 get_num_topics_for_channel_index :: proc(db: Database, channel_index: int) -> int {
-    if !(channel_index in db.channel_index_to_topic_index_set) {
+    if !(channel_index in db.channel_index_to_address_index_set) {
         return 0
     }
-    return len(db.channel_index_to_topic_index_set[channel_index])
+    return len(db.channel_index_to_address_index_set[channel_index])
 }
 
 get_topic_rows_for_channel_index_by_name :: proc(
     db: Database,
     channel_index: int,
 ) -> [dynamic]TopicRow {
-    if !(channel_index in db.channel_index_to_topic_index_set) {
+    if !(channel_index in db.channel_index_to_address_index_set) {
         return make([dynamic]TopicRow, 0)
     }
 
-    topic_index_set := db.channel_index_to_topic_index_set[channel_index]
+    address_index_set := db.channel_index_to_address_index_set[channel_index]
 
     row_arr: [dynamic]TopicRow = make([dynamic]TopicRow)
 
-    for topic_index, i in topic_index_set {
-        if !topic_index_set[topic_index] {
+    for address_index, i in address_index_set {
+        if !address_index_set[address_index] {
             log.error("unexpected")
             continue
         }
 
+        topic_index := db.address_arr[address_index].topic_index
         topic_name := db.topic_string_arr[topic_index]
 
         topic_row := TopicRow{
-            index = topic_index,
+            address_index = address_index,
+            topic_index = topic_index,
             name = topic_name,
         }
 
