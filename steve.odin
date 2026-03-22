@@ -121,11 +121,13 @@ test_Database :: proc(t: ^testing.T) {
                 address_index = 2,
                 name = "another design topic",
                 topic_index = 2,
+                num_messages = 1,
             },
             TopicRow{
                 address_index = 0,
                 name = "design stuff",
                 topic_index = 0,
+                num_messages = 2,
             },
         }
 

@@ -29,6 +29,7 @@ TopicRow :: struct {
     address_index: int,
     topic_index: int,
     name: string,
+    num_messages: int,
 }
 
 UserRow :: struct {
@@ -293,10 +294,13 @@ get_topic_rows_for_channel_index_by_name :: proc(
         topic_index := db.address_arr[address_index].topic_index
         topic_name := db.topic_string_arr[topic_index]
 
+        num_messages := len(db.address_index_to_message_index_set[address_index])
+
         topic_row := TopicRow{
             address_index = address_index,
             topic_index = topic_index,
             name = topic_name,
+            num_messages = num_messages,
         }
 
         append(&row_arr, topic_row)
