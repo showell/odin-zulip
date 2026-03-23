@@ -29,7 +29,7 @@ test_Database :: proc(t: ^testing.T) {
 
     design := client.ServerSubscription{
         stream_id = 102,
-        name = "design",
+        name = "design <>",
     }
     index_design := 2
 
@@ -56,7 +56,7 @@ test_Database :: proc(t: ^testing.T) {
 
     testing.expect_value(t, database.get_channel_name(db, 0), "engineering")
     testing.expect_value(t, database.get_channel_name(db, 1), "feedback")
-    testing.expect_value(t, database.get_channel_name(db, 2), "design")
+    testing.expect_value(t, database.get_channel_name(db, 2), "design <>")
 
     testing.expect_value(t, database.get_channel_id(db, 0), 103)
     testing.expect_value(t, database.get_channel_id(db, 1), 101)
@@ -160,6 +160,12 @@ test_Database :: proc(t: ^testing.T) {
     // HTML
     {
         s := html.channels_html(db)
+        defer delete(s)
+        log.info(s)
+    }
+
+    for i in 0..<3 {
+        s := html.topics_html(db, i)
         defer delete(s)
         log.info(s)
     }
