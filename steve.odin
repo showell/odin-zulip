@@ -8,6 +8,7 @@ import "core:testing"
 
 import "client"
 import "database"
+import "html"
 
 @(test)
 test_Database :: proc(t: ^testing.T) {
@@ -154,5 +155,12 @@ test_Database :: proc(t: ^testing.T) {
 
         testing.expect_value(t, message_rows[0].content, "message1")
         testing.expect_value(t, message_rows[1].content, "message2")
+    }
+
+    // HTML
+    {
+        s := html.channels_html(db)
+        defer delete(s)
+        log.info(s)
     }
 }
