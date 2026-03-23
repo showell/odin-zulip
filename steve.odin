@@ -89,7 +89,7 @@ test_Database :: proc(t: ^testing.T) {
         id = 203,
         sender_full_name = "Fred Flintstone",
         sender_id = 1002,
-        subject = "feedback stuff",
+        subject = "feedback & other stuff",
         stream_id = 101,
     }
 
