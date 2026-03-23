@@ -148,7 +148,7 @@ test_Database :: proc(t: ^testing.T) {
     }
 
     {
-        message_rows := database.message_rows_for_address_index(db, 0)
+        message_rows := database.get_message_rows_for_address_index(db, 0)
         defer delete(message_rows)
 
         testing.expect_value(t, len(message_rows), 2)
@@ -164,9 +164,22 @@ test_Database :: proc(t: ^testing.T) {
         log.info(s)
     }
 
-    for i in 0..<3 {
-        s := html.topics_html(db, i)
+    channel_indexes := database.get_channel_indexes_by_name(db)
+    defer delete(channel_indexes)
+
+    for channel_index in channel_indexes {
+        s := html.topics_html(db, channel_index)
         defer delete(s)
         log.info(s)
+
+
+        topic_rows := database.get_topic_rows_for_channel_index_by_name(db, channel_index)
+        defer delete(topic_rows)
+
+        for topic_row in topic_rows {
+            s := html.messages_html(db, topic_row.address_index)
+            defer delete(s)
+            log.info(s)
+        }
     }
 }

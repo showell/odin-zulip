@@ -313,7 +313,7 @@ get_topic_rows_for_channel_index_by_name :: proc(
     return row_arr
 }
 
-message_rows_for_address_index :: proc(db: Database, address_index: int) -> [dynamic]MessageRow {
+get_message_rows_for_address_index :: proc(db: Database, address_index: int) -> [dynamic]MessageRow {
     message_index_set := db.address_index_to_message_index_set[address_index]
     arr := make([dynamic]MessageRow, len(message_index_set))
 

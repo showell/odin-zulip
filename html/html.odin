@@ -62,7 +62,7 @@ topic_row_html :: proc(topic_row: database.TopicRow) -> string {
 <div class="topic_row">
   <div class="topic_name">%s</div>
   <div><a href="/topic_messages/%d">topics</a></div>
-  <div class="topic_count">%d topics</div>
+  <div class="topic_count">%d messages</div>
 </div>
 `,
         escaped_name,
@@ -96,3 +96,48 @@ topics_html :: proc(db: Database, channel_index: int) -> string {
     return strings.concatenate(lines[:])
 }
 
+message_row_html :: proc(db: Database, message_row: database.MessageRow) -> string {
+    sender_name := database.get_sender_name_for_sender_index(db, message_row.sender_index)
+    safe_html_content := message_row.content
+
+    escaped_sender_name, allocated_name := entity.escape_html(sender_name)
+    defer {
+        if (allocated_name) {
+            delete(escaped_sender_name)
+        }
+    }
+
+    return fmt.tprintf(`
+<div class="message_sender">%s</div>
+<div>%s</div>
+<hr />
+`,
+        escaped_sender_name,
+        safe_html_content,
+    )
+}
+
+messages_html :: proc(db: Database, address_index: int) -> string {
+    lines := make([dynamic]string)
+    defer delete(lines)
+
+    message_rows := database.get_message_rows_for_address_index(db, address_index)
+    defer delete(message_rows)
+
+    topic_name := database.get_topic_name_for_address_index(db, address_index)
+    escaped_topic_name, allocated_name := entity.escape_html(topic_name)
+    defer {
+        if (allocated_name) {
+            delete(escaped_topic_name)
+        }
+    }
+
+    heading := fmt.tprintf(`<h4>%d messages for %s</h4>`, len(message_rows), escaped_topic_name)
+    append(&lines, heading)
+
+    for message_row in message_rows {
+        append(&lines, message_row_html(db, message_row))
+    }
+
+    return strings.concatenate(lines[:])
+}
